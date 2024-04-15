@@ -1,11 +1,13 @@
 import Image from "next/image"
 import { MouseEvent, SyntheticEvent, useContext, useEffect, useState } from "react"
 import { InvoiceFileContext } from "@/context/InvoiceFileContext"
-import { Annotation, AnnotationMap, BoundingBoxCoordinates } from "@/components/AnnotationTool"
+import { AnnotationMap, BoundingBoxCoordinates } from "@/components/AnnotationTool"
 
 interface InvoiceViewProps {
     annotations: AnnotationMap
+    selectedAnnotation: string | null
     onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates) => void
+    onBoundingBoxClick: (annoKey: string | null) => void
 }
 
 interface MousePositionCoordinates {
@@ -14,7 +16,7 @@ interface MousePositionCoordinates {
 }
 
 export const InvoiceView = (props: InvoiceViewProps) => {
-    const { annotations, onBoundingBoxCreate} = props
+    const { annotations, selectedAnnotation, onBoundingBoxCreate, onBoundingBoxClick} = props
 
     const invoiceFile = useContext(InvoiceFileContext)
 
@@ -68,12 +70,31 @@ export const InvoiceView = (props: InvoiceViewProps) => {
         setImageDimensions([event.currentTarget.naturalWidth, event.currentTarget.naturalHeight])
     }
 
+    const handleImageClick = (event: MouseEvent<HTMLImageElement>) => {
+        const { absolute: coordinates } = getMousePosition(event)
+
+        const selectedAnnotation = Array.from(annotations.keys()).find((annoKey) => {
+            const annotation = annotations.get(annoKey)
+            if(annotation) {
+                if(coordinates[0] <= annotation.boundingBox[2] && coordinates[0] >= annotation.boundingBox[0]) {
+                    if(coordinates[1] >= annotation.boundingBox[1] && coordinates[1] <= annotation.boundingBox[3]) {
+                        return true
+                    }
+                }    
+            }
+            return false
+        })
+
+        onBoundingBoxClick(selectedAnnotation || null)
+    }
+
     useEffect(() => {
         if(drawing) return
         
-        if(JSON.stringify(provisionalBoundingBox) !== JSON.stringify([0,0,0,0])) {
+        if(provisionalBoundingBox[0] !== provisionalBoundingBox[2] && provisionalBoundingBox[1] !== provisionalBoundingBox[3]) {
             onBoundingBoxCreate(provisionalBoundingBox)
         }
+        
         setProvisionalBoundingBox([0,0,0,0])
     }, [drawing])
 
@@ -90,6 +111,7 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                 }}
                 width={0}
                 height={0}
+                onClick={handleImageClick}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
                 onMouseMove={handleMouseMove}
@@ -103,7 +125,7 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                             position: 'absolute',
                             top: provisionalBoundingBox[1],
                             left: provisionalBoundingBox[0],
-                            border: '1px solid red',
+                            border: '2px solid darkgrey',
                             backgroundColor: 'whitesmoke',
                             height: provisionalBoundingBox[3] - provisionalBoundingBox[1],
                             width: provisionalBoundingBox[2] - provisionalBoundingBox[0],
@@ -111,20 +133,20 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                             pointerEvents: 'none'
                     }}></div>
                 )}
-                {Array.from(annotations.values()).map((annotation, annoIndex) => 
-                    <div key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-${annoIndex}`}
+                {Array.from(annotations, ([annoKey, annotation]) => (
+                    <div key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-${annoKey}`}
                     style={{
                         position: 'absolute',
                         top: annotation.boundingBox[1],
                         left: annotation.boundingBox[0],
-                        border: '1px solid black',
-                        backgroundColor: 'whitesmoke',
+                        border: selectedAnnotation === annoKey ? '2px solid blue' : '2px solid black',
+                        backgroundColor: selectedAnnotation === annoKey ? 'lightblue' : 'whitesmoke',
                         height: annotation.boundingBox[3] - annotation.boundingBox[1],
                         width: annotation.boundingBox[2] - annotation.boundingBox[0],
                         opacity: '0.5',
                         pointerEvents: 'none'
                     }}></div>
-                )}
+                ))}
             </div>
         </div>
     )

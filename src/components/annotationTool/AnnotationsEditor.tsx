@@ -6,18 +6,22 @@ import { v4 as uuidv4 } from "uuid"
 
 export const AnnotationsEditor = () => {
     const [annotations, setAnnotations] = useState<AnnotationMap>(new Map())
+    const [selectedAnnotation, setSelectedAnnotation] = useState<string|null>(null)
     
     return(
         <div className="columns-2">
             <div>
                 <FieldsEditor 
                     annotations={annotations}
+                    selectedAnnotation={selectedAnnotation}
                     onAnnotationsChange={setAnnotations}
+                    onRowClick={setSelectedAnnotation}
                 />
             </div>
             <div>
                 <InvoiceView 
                     annotations={annotations} 
+                    selectedAnnotation={selectedAnnotation}
                     onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
                         const updatedAnnotations = structuredClone(annotations)
                         updatedAnnotations.set(uuidv4(), {
@@ -29,6 +33,7 @@ export const AnnotationsEditor = () => {
                         })
                         return updatedAnnotations
                     })}
+                    onBoundingBoxClick={setSelectedAnnotation}
                 />
             </div>
         </div>
