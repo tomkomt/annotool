@@ -4,10 +4,12 @@ import { InvoiceFileContext } from "@/context/InvoiceFileContext"
 import { AnnotationMap, BoundingBoxCoordinates } from "@/components/AnnotationTool"
 
 interface InvoiceViewProps {
+    widthOffset: number
     annotations: AnnotationMap
     selectedAnnotation: string | null
     onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates) => void
     onBoundingBoxClick: (annoKey: string | null) => void
+    onImageDimensionsLoad: (dimensions: [number, number]) => void
 }
 
 interface MousePositionCoordinates {
@@ -16,11 +18,9 @@ interface MousePositionCoordinates {
 }
 
 export const InvoiceView = (props: InvoiceViewProps) => {
-    const { annotations, selectedAnnotation, onBoundingBoxCreate, onBoundingBoxClick} = props
+    const { widthOffset, annotations, selectedAnnotation, onBoundingBoxCreate, onBoundingBoxClick, onImageDimensionsLoad} = props
 
     const invoiceFile = useContext(InvoiceFileContext)
-
-    const [imageDimensions, setImageDimensions] = useState<[number, number]>([0, 0])
 
     const [drawing, setDrawing] = useState<boolean>(false)
     const [provisionalBoundingBox, setProvisionalBoundingBox] = useState<BoundingBoxCoordinates>([0,0,0,0])
@@ -41,20 +41,20 @@ export const InvoiceView = (props: InvoiceViewProps) => {
     const handleMouseDown = (event: MouseEvent<HTMLImageElement>) => {
         setDrawing(true)
 
-        const { absolute: coordinates } = getMousePosition(event)
+        const { relative: coordinates } = getMousePosition(event)
         setProvisionalBoundingBox([coordinates[0],coordinates[1],coordinates[0],coordinates[1]])
     }
 
     const handleMouseUp = (event: MouseEvent<HTMLImageElement>) => {
         setDrawing(false)
 
-        const { absolute: coordinates } = getMousePosition(event)
+        const { relative: coordinates } = getMousePosition(event)
         setProvisionalBoundingBox((previous) => [previous[0],previous[1],coordinates[0],coordinates[1]])
     }
 
     const handleMouseMove = (event: MouseEvent<HTMLImageElement>) => {
         if(drawing) {
-            const { absolute: coordinates } = getMousePosition(event)
+            const { relative: coordinates } = getMousePosition(event)
             setProvisionalBoundingBox((previous) => [previous[0],previous[1],coordinates[0],coordinates[1]])
         }
     }
@@ -62,16 +62,16 @@ export const InvoiceView = (props: InvoiceViewProps) => {
     const handleMouseOut = (event: MouseEvent<HTMLImageElement>) => {
         setDrawing(false)
 
-        const { absolute: coordinates } = getMousePosition(event)
+        const { relative: coordinates } = getMousePosition(event)
         setProvisionalBoundingBox((previous) => [previous[0],previous[1],coordinates[0],coordinates[1]])
     }
 
     const handleImageOnLoad = (event: SyntheticEvent<HTMLImageElement>) => {
-        setImageDimensions([event.currentTarget.naturalWidth, event.currentTarget.naturalHeight])
+        onImageDimensionsLoad([event.currentTarget.naturalWidth, event.currentTarget.naturalHeight])
     }
 
     const handleImageClick = (event: MouseEvent<HTMLImageElement>) => {
-        const { absolute: coordinates } = getMousePosition(event)
+        const { relative: coordinates } = getMousePosition(event)
 
         const selectedAnnotation = Array.from(annotations.keys()).find((annoKey) => {
             const annotation = annotations.get(annoKey)
@@ -124,11 +124,11 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                         style={{
                             position: 'absolute',
                             top: provisionalBoundingBox[1],
-                            left: provisionalBoundingBox[0],
+                            left: provisionalBoundingBox[0] + widthOffset,
                             border: '2px solid darkgrey',
                             backgroundColor: 'whitesmoke',
                             height: provisionalBoundingBox[3] - provisionalBoundingBox[1],
-                            width: provisionalBoundingBox[2] - provisionalBoundingBox[0],
+                            width: (provisionalBoundingBox[2] + widthOffset) - (provisionalBoundingBox[0] + widthOffset),
                             opacity: '0.5',
                             pointerEvents: 'none'
                     }}></div>
@@ -138,11 +138,11 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                     style={{
                         position: 'absolute',
                         top: annotation.boundingBox[1],
-                        left: annotation.boundingBox[0],
+                        left: annotation.boundingBox[0] + widthOffset,
                         border: selectedAnnotation === annoKey ? '2px solid blue' : '2px solid black',
                         backgroundColor: selectedAnnotation === annoKey ? 'lightblue' : 'whitesmoke',
                         height: annotation.boundingBox[3] - annotation.boundingBox[1],
-                        width: annotation.boundingBox[2] - annotation.boundingBox[0],
+                        width: (annotation.boundingBox[2] + widthOffset) - (annotation.boundingBox[0] + widthOffset),
                         opacity: '0.5',
                         pointerEvents: 'none'
                     }}></div>

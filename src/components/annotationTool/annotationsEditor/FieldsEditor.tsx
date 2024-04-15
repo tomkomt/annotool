@@ -1,14 +1,13 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react"
+import { ChangeEvent, useContext, useMemo } from "react"
 import { InvoiceFileContext } from "@/context/InvoiceFileContext"
 import { AnnotationMap } from "@/components/AnnotationTool"
-import { APIAnnotationsParams } from "@/app/api/annotations/route"
-import { APIErrorResponse } from "@/types/api"
 
 interface FieldsEditorProps {
     annotations: AnnotationMap,
     selectedAnnotation: string|null,
     onAnnotationsChange: (annotations: AnnotationMap) => void
     onRowClick: (annoKey: string) => void
+    onEditorSubmit: () => void
 }
 
 enum RequiredFields {
@@ -21,7 +20,7 @@ enum RequiredFields {
 const currencies = ['eur', 'nok', 'sek', 'dkk']
 
 export const FieldsEditor = (props: FieldsEditorProps) => {
-    const { annotations, selectedAnnotation, onAnnotationsChange, onRowClick } = props
+    const { annotations, selectedAnnotation, onAnnotationsChange, onRowClick, onEditorSubmit } = props
 
     const invoiceFile = useContext(InvoiceFileContext)
 
@@ -60,7 +59,7 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         onAnnotationsChange(updatedAnnotations)
     }
 
-    const isSubmitEnabled = () => {
+    const isSubmitEnabled = useMemo(() => {
         const annotationsToInspect = Array.from(annotations.values())
         if(annotationsToInspect.every((anno) => anno.type !== RequiredFields.SupplierName)) return false
         if(annotationsToInspect.every((anno) => anno.type !== RequiredFields.DatePurchase)) return false
@@ -68,28 +67,7 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         if(annotationsToInspect.every((anno) => anno.type !== RequiredFields.Currency)) return false
         
         return true
-    }
-
-    const onSubmitClick = () => {
-        fetch('/api/annotations', {
-            method: 'POST',
-            body: JSON.stringify({
-                invoiceFileName: invoiceFile.fileName,
-                annotations: Array.from(annotations.values())
-            } as unknown as APIAnnotationsParams)
-        })
-        .then(response => {
-            const filename =  response.headers.get('Content-Disposition')?.split('filename=')[1] || 'file.json'
-            response.blob().then(blob => {
-                let url = window.URL.createObjectURL(blob);
-                let a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.click();
-            });
-        })
-        .catch((error: APIErrorResponse) => console.error(error))
-    }
+    }, [annotations])
 
     return(
         <div className="pm-8">
@@ -148,10 +126,10 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
                 <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
                     <button 
                         type="button" 
-                        onClick={onSubmitClick}
-                        className={isSubmitEnabled() ? 
+                        onClick={onEditorSubmit}
+                        className={isSubmitEnabled ? 
                             "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" : 
-                            "text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed font-medium rounded-lg text-sm px-5 py-2.5 text-center"} disabled={!isSubmitEnabled()}>Export JSON</button>
+                            "text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed font-medium rounded-lg text-sm px-5 py-2.5 text-center"} disabled={!isSubmitEnabled}>Export JSON</button>
                 </div>
             </form>
         </div>
