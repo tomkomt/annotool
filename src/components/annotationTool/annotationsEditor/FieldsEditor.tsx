@@ -121,13 +121,16 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
                             <div>
                                 <div className="grid md:grid-cols-10">
                                     <div className="col-span-9">
-                                        <label htmlFor="currency_type" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
-                                        <select onChange={(event) => onChangeCurrency(event, annoKey)} id="currency_type" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <option value="">Choose a currency</option>
-                                            {currencies.map((currency, index) => (
-                                                <option key={`currency-option-${currency}-${index}`} value={currency}>{currency.toUpperCase()}</option>
-                                            ))}
-                                        </select>
+                                        <div style={{
+                                            visibility: annotations.get(annoKey)?.type === RequiredFields.Currency ? 'visible' : 'hidden'
+                                        }}>
+                                            <label htmlFor="currency_type" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
+                                            <select onChange={(event) => onChangeCurrency(event, annoKey)} id="currency_type" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                {currencies.map((currency, index) => (
+                                                    <option key={`currency-option-${currency}-${index}`} value={currency}>{currency.toUpperCase()}</option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
                                         <svg style={{
