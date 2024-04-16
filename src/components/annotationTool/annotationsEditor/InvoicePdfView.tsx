@@ -17,7 +17,7 @@ interface InvoicePdfViewProps {
     widthOffset: number
     annotations: AnnotationMap
     selectedAnnotation: string | null
-    onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates) => void
+    onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates, page: number) => void
     onBoundingBoxClick: (annoKey: string | null) => void
     onImageDimensionsLoad: (dimensions: [number, number]) => void
 }
@@ -35,8 +35,8 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
     const [drawing, setDrawing] = useState<boolean>(false)
     const [provisionalBoundingBox, setProvisionalBoundingBox] = useState<BoundingBoxCoordinates>([0,0,0,0])
 
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);  
+    const [numPages, setNumPages] = useState<number>(0)
+    const [actualPage, setActualPage] = useState<number>(0)
 
     const getMousePosition = (event: MouseEvent<any>): MousePositionCoordinates => {
         let rect = event.currentTarget.getBoundingClientRect();
@@ -101,7 +101,7 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
         if(drawing) return
         
         if(provisionalBoundingBox[0] !== provisionalBoundingBox[2] && provisionalBoundingBox[1] !== provisionalBoundingBox[3]) {
-            onBoundingBoxCreate(provisionalBoundingBox)
+            onBoundingBoxCreate(provisionalBoundingBox, actualPage)
         }
         
         setProvisionalBoundingBox([0,0,0,0])
@@ -114,6 +114,19 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
     const onRenderSuccess = () => {
         setIsRendered(true);
     }
+
+    const onDocumentLoadSuccess = ({ numPages }: { numPages: number}) => {
+        setNumPages(numPages)
+        setActualPage(1)
+    }
+
+    const handleChangePage = (offset: number) => {
+        setActualPage((previous) => previous + offset)
+    }
+
+    const goNextPage = () => handleChangePage(1)
+
+    const goPreviousPage = () => handleChangePage(-1)
 
     useEffect(() => {
         if(isRendered && canvasRef && canvasRef.current) {
@@ -137,18 +150,36 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
 
     return(
         <div>
-            <Document 
-                file={`/invoices/${invoiceFile.fileName}`}
-                inputRef={canvasRef}
-            >
-                <Page 
-                    pageNumber={1} 
-                    onRenderSuccess={onRenderSuccess}
-                    renderAnnotationLayer={false}
-                    renderTextLayer={false}
-                    height={window.innerHeight}
-                />
-            </Document>
+            <div>
+                <Document 
+                    file={`/invoices/${invoiceFile.fileName}`}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    inputRef={canvasRef}
+                >
+                    <Page 
+                        pageNumber={actualPage} 
+                        onRenderSuccess={onRenderSuccess}
+                        renderAnnotationLayer={false}
+                        renderTextLayer={false}
+                        height={window.innerHeight - 50}
+                    />
+                </Document>
+                <div className="container px-10 mx-0 min-w-full flex flex-row items-center">
+                    <button
+                        className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type="button"
+                        disabled={actualPage === 1}
+                        onClick={goPreviousPage}
+                    >Previous page</button>
+                    <p className="text-xs text-gray-900 dark:text-white"> Page {actualPage} of {numPages} pages</p>
+                    <button
+                        className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type="button"
+                        disabled={actualPage === numPages}
+                        onClick={goNextPage}
+                    >Next page</button>
+                </div>
+            </div>
             <div id="bounding-boxes-container">
                 {!!drawing && (
                     <div key={`provisional-bounding-box-${provisionalBoundingBox[0]}-${provisionalBoundingBox[1]}`}
@@ -165,7 +196,7 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
                     }}></div>
                 )}
                 {Array.from(annotations, ([annoKey, annotation]) => (
-                    <div key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-${annoKey}`}
+                    <div key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-page-${annotation.page}-${annoKey}`}
                     style={{
                         position: 'absolute',
                         top: annotation.boundingBox[1],
@@ -175,7 +206,8 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
                         height: annotation.boundingBox[3] - annotation.boundingBox[1],
                         width: (annotation.boundingBox[2] + widthOffset) - (annotation.boundingBox[0] + widthOffset),
                         opacity: '0.5',
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        display: annotation.page === actualPage ? 'inherit' : 'none'
                     }}></div>
                 ))}
             </div>

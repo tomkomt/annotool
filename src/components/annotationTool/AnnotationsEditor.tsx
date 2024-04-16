@@ -1,7 +1,7 @@
 import { InvoiceView } from "./annotationsEditor/InvoiceView"
 import { FieldsEditor } from "./annotationsEditor/FieldsEditor"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { AnnotationMap } from "../AnnotationTool"
+import { AnnotationMap, BoundingBoxCoordinates } from "../AnnotationTool"
 import { v4 as uuidv4 } from "uuid"
 import { InvoiceFileContext } from "@/context/InvoiceFileContext"
 import { APIAnnotationsParams } from "@/app/api/annotations/route"
@@ -59,6 +59,20 @@ export const AnnotationsEditor = () => {
         .catch((error: APIErrorResponse) => console.error(error))
     }
 
+    const handleBoundingBoxCreate = (boundingBoxToAdd: BoundingBoxCoordinates, page: number) => {
+        setAnnotations((annotations) => {
+            const updatedAnnotations = structuredClone(annotations)
+            updatedAnnotations.set(uuidv4(), {
+                title: '',
+                type: 'free_text',
+                boundingBox: boundingBoxToAdd,
+                misc: {},
+                page: page
+            })
+            return updatedAnnotations
+        })
+    }
+
     return(
         <div className="columns-2" ref={editorRef}>
             <div>
@@ -76,17 +90,7 @@ export const AnnotationsEditor = () => {
                         widthOffset={offsetWidth}
                         annotations={annotations} 
                         selectedAnnotation={selectedAnnotation}
-                        onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
-                            const updatedAnnotations = structuredClone(annotations)
-                            updatedAnnotations.set(uuidv4(), {
-                                title: '',
-                                type: 'free_text',
-                                boundingBox: boundingBoxToAdd,
-                                misc: {},
-                                page: 1
-                            })
-                            return updatedAnnotations
-                        })}
+                        onBoundingBoxCreate={handleBoundingBoxCreate}
                         onBoundingBoxClick={setSelectedAnnotation}
                         onImageDimensionsLoad={setImageDimensions}
                     />
@@ -96,17 +100,7 @@ export const AnnotationsEditor = () => {
                         widthOffset={offsetWidth}
                         annotations={annotations} 
                         selectedAnnotation={selectedAnnotation}
-                        onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
-                            const updatedAnnotations = structuredClone(annotations)
-                            updatedAnnotations.set(uuidv4(), {
-                                title: '',
-                                type: 'free_text',
-                                boundingBox: boundingBoxToAdd,
-                                misc: {},
-                                page: 1
-                            })
-                            return updatedAnnotations
-                        })}
+                        onBoundingBoxCreate={handleBoundingBoxCreate}
                         onBoundingBoxClick={setSelectedAnnotation}
                         onImageDimensionsLoad={setImageDimensions}
                     />

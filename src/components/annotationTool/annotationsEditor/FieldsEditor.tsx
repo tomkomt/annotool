@@ -73,7 +73,7 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         <div className="pm-8">
             <form>
                 <div className="container py-5 px-5 mx-0 min-w-full" style={{
-                    height: 'calc(100vh - 100px)',
+                    height: 'calc(100vh - 50px)',
                     overflowY: 'auto'
                 }}>
                     {!annotations.size && (<div>To start annotating, draw the first bounding box on the invoice image.</div>)}
@@ -123,7 +123,7 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
                         </div>
                     ))}
                 </div>
-                <div className="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+                <div className="container px-10 mx-0 min-w-full flex flex-col items-center">
                     <button 
                         type="button" 
                         onClick={onEditorSubmit}

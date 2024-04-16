@@ -7,7 +7,7 @@ interface InvoiceViewProps {
     widthOffset: number
     annotations: AnnotationMap
     selectedAnnotation: string | null
-    onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates) => void
+    onBoundingBoxCreate: (boundingBox: BoundingBoxCoordinates, page: number) => void
     onBoundingBoxClick: (annoKey: string | null) => void
     onImageDimensionsLoad: (dimensions: [number, number]) => void
 }
@@ -92,7 +92,7 @@ export const InvoiceView = (props: InvoiceViewProps) => {
         if(drawing) return
         
         if(provisionalBoundingBox[0] !== provisionalBoundingBox[2] && provisionalBoundingBox[1] !== provisionalBoundingBox[3]) {
-            onBoundingBoxCreate(provisionalBoundingBox)
+            onBoundingBoxCreate(provisionalBoundingBox, 1)
         }
         
         setProvisionalBoundingBox([0,0,0,0])
