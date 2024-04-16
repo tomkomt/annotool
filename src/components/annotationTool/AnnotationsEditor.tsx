@@ -14,7 +14,7 @@ export const AnnotationsEditor = () => {
     const [imageDimensions, setImageDimensions] = useState<[number, number]>([0, 0])
     const editorHeight = window.innerHeight
 
-    const imageResizeRatio = useMemo(() => imageDimensions[1] > 0 && editorHeight > 0 ? imageDimensions[1] / editorHeight : 0, [editorHeight, imageDimensions])
+    const imageResizeRatio = useMemo(() => imageDimensions[1] > 0 && editorHeight > 0 ? imageDimensions[1] / editorHeight : 1, [editorHeight, imageDimensions])
 
     const invoiceFile = useContext(InvoiceFileContext)
 
