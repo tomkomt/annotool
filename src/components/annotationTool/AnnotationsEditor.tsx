@@ -71,24 +71,46 @@ export const AnnotationsEditor = () => {
                 />
             </div>
             <div>
-                <InvoicePdfView 
-                    widthOffset={offsetWidth}
-                    annotations={annotations} 
-                    selectedAnnotation={selectedAnnotation}
-                    onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
-                        const updatedAnnotations = structuredClone(annotations)
-                        updatedAnnotations.set(uuidv4(), {
-                            title: '',
-                            type: 'free_text',
-                            boundingBox: boundingBoxToAdd,
-                            misc: {},
-                            page: 1
-                        })
-                        return updatedAnnotations
-                    })}
-                    onBoundingBoxClick={setSelectedAnnotation}
-                    onImageDimensionsLoad={setImageDimensions}
-                />
+                {invoiceFile.fileType === 'application/pdf' && (
+                    <InvoicePdfView 
+                        widthOffset={offsetWidth}
+                        annotations={annotations} 
+                        selectedAnnotation={selectedAnnotation}
+                        onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
+                            const updatedAnnotations = structuredClone(annotations)
+                            updatedAnnotations.set(uuidv4(), {
+                                title: '',
+                                type: 'free_text',
+                                boundingBox: boundingBoxToAdd,
+                                misc: {},
+                                page: 1
+                            })
+                            return updatedAnnotations
+                        })}
+                        onBoundingBoxClick={setSelectedAnnotation}
+                        onImageDimensionsLoad={setImageDimensions}
+                    />
+                )}
+                {invoiceFile.fileType !== 'application/pdf' && (
+                    <InvoiceView 
+                        widthOffset={offsetWidth}
+                        annotations={annotations} 
+                        selectedAnnotation={selectedAnnotation}
+                        onBoundingBoxCreate={(boundingBoxToAdd) => setAnnotations((annotations) => {
+                            const updatedAnnotations = structuredClone(annotations)
+                            updatedAnnotations.set(uuidv4(), {
+                                title: '',
+                                type: 'free_text',
+                                boundingBox: boundingBoxToAdd,
+                                misc: {},
+                                page: 1
+                            })
+                            return updatedAnnotations
+                        })}
+                        onBoundingBoxClick={setSelectedAnnotation}
+                        onImageDimensionsLoad={setImageDimensions}
+                    />
+                )}
             </div>
         </div>
     )

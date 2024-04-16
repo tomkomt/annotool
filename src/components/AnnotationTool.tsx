@@ -21,13 +21,18 @@ export type AnnotationMap = Map<string, Annotation>
 
 export const AnnotationTool = () => {
     const [invoiceFile, setInvoiceFile] = useState<string|null>(null)
+    const [invoiceFileType, setInvoiceFileType] = useState<string|null>(null)
 
     return(
         <div>
             <InvoiceFileContext.Provider value={{
-                fileName: invoiceFile
+                fileName: invoiceFile,
+                fileType: invoiceFileType
             }}>
-                {!!!invoiceFile && <UploadInvoice handleInvoiceUpload={setInvoiceFile} />}
+                {!!!invoiceFile && <UploadInvoice handleInvoiceUpload={(fileName, fileType) => {
+                    setInvoiceFile(fileName)
+                    setInvoiceFileType(fileType)
+                }} />}
                 {!!invoiceFile && <AnnotationsEditor />}
             </InvoiceFileContext.Provider>
         </div>

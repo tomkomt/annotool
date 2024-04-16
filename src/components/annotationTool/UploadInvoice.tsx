@@ -3,7 +3,7 @@ import { APIErrorResponse } from "@/types/api"
 import { APIUploadResponse } from "@/app/api/upload/route"
 
 interface UploadInvoiceProps {
-    handleInvoiceUpload: (fileName: string) => void
+    handleInvoiceUpload: (fileName: string, fileType: string) => void
 }
 
 export const UploadInvoice = (props: UploadInvoiceProps) => {
@@ -21,7 +21,7 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
                 body: formData
             })
             .then(response => response.json())
-            .then((data: APIUploadResponse) => handleInvoiceUpload(data.uploadedFileName))
+            .then((data: APIUploadResponse) => handleInvoiceUpload(data.uploadedFileName, data.uploadedFileType))
             .catch((error: APIErrorResponse) => console.error(error))
         }
     }

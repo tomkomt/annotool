@@ -5,6 +5,7 @@ import path from "path"
 
 export interface APIUploadResponse extends APIBaseResponse {
     uploadedFileName: string
+    uploadedFileType: string
 }
 
 export const POST = async (req: NextRequest) => {
@@ -22,6 +23,7 @@ export const POST = async (req: NextRequest) => {
 
     const buffer = Buffer.from(await invoiceFile.arrayBuffer())
     const filename = invoiceFile.name.replaceAll(' ', '_')
+    const filetype = invoiceFile.type
 
     try {
         const pathToFile = path.join(process.cwd(), "public/invoices/" + filename)
@@ -30,7 +32,9 @@ export const POST = async (req: NextRequest) => {
         )    
 
         return NextResponse.json({
-            uploadedFileName: filename, status: 201
+            uploadedFileName: filename, 
+            uploadedFileType: filetype,
+            status: 201
         } as APIUploadResponse)
     } catch(error) {
         return NextResponse.json({
