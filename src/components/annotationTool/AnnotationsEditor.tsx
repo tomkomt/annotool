@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import { InvoiceFileContext } from "@/context/InvoiceFileContext"
 import { APIAnnotationsParams } from "@/app/api/annotations/route"
 import { APIErrorResponse } from "@/types/api"
+import { InvoicePdfView } from "./annotationsEditor/InvoicePdfView"
 
 export const AnnotationsEditor = () => {
     const [annotations, setAnnotations] = useState<AnnotationMap>(new Map())
@@ -70,7 +71,7 @@ export const AnnotationsEditor = () => {
                 />
             </div>
             <div>
-                <InvoiceView 
+                <InvoicePdfView 
                     widthOffset={offsetWidth}
                     annotations={annotations} 
                     selectedAnnotation={selectedAnnotation}
