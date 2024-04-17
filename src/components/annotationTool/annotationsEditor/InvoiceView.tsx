@@ -101,6 +101,7 @@ export const InvoiceView = (props: InvoiceViewProps) => {
     return(
         <div>
             <Image
+                id="cy-Image-component"
                 src={`/invoices/${invoiceFile.fileName}`}
                 draggable={false}
                 alt={invoiceFile.fileName || 'Invoice file was not found'}
@@ -134,7 +135,9 @@ export const InvoiceView = (props: InvoiceViewProps) => {
                     }}></div>
                 )}
                 {Array.from(annotations, ([annoKey, annotation]) => (
-                    <div key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-${annoKey}`}
+                    <div 
+                    key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-${annoKey}`}
+                    className={selectedAnnotation === annoKey ? 'highlighted' : ''}
                     style={{
                         position: 'absolute',
                         top: annotation.boundingBox[1],
