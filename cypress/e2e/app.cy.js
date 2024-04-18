@@ -30,7 +30,8 @@ describe('Annotool Tests', () => {
     beforeEach(() => {
         cy.intercept('POST', '/api/upload', {
             uploadedFileName: 'example_3.jpeg',
-            uploadedFileType: 'image/jpeg'
+            uploadedFileType: 'image/jpeg',
+            status: 200
         })
     })
 
@@ -150,7 +151,8 @@ describe('Annotool Tests', () => {
     it('should upload a PDF file and draw a new bounding box', () => {
         cy.intercept('POST', '/api/upload', {
             uploadedFileName: 'example_1.pdf',
-            uploadedFileType: 'application/pdf'
+            uploadedFileType: 'application/pdf',
+            status: 200
         })
 
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
@@ -190,7 +192,8 @@ describe('Annotool Tests', () => {
     it('should upload a multi-page PDF file and draw bounding box on each page', () => {
         cy.intercept('POST', '/api/upload', {
             uploadedFileName: 'example_1.pdf',
-            uploadedFileType: 'application/pdf'
+            uploadedFileType: 'application/pdf',
+            status: 200
         })
 
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
@@ -245,5 +248,20 @@ describe('Annotool Tests', () => {
         cy.get('#bounding-boxes-container div:nth-of-type(1)').should('have.css', 'display', 'block')
         cy.get('#bounding-boxes-container div:nth-of-type(2)').should('have.css', 'display', 'none')
 
+    })
+
+    it('should display error message component if file is not supported', () => {
+        cy.visit('/')
+
+        cy.intercept('POST', '/api/upload', {
+            uploadedFileName: 'example_3_.jpeg.json',
+            uploadedFileType: 'application/json',
+            message: 'File with mimetype "application/json" is not supported.',
+            status: 415
+        })
+
+        cy.get('#upload_invoice').attachFile('example_3_.jpeg.json')
+
+        cy.get('#cy-error-message').should('exist')
     })
 })

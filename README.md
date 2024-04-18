@@ -6,26 +6,26 @@ Annotool is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-
 
 ## How this works
 
-At first, user needs to upload image or PDF file by file uploader.
+At first, the user needs to upload an image or PDF file by file uploader.
 
-After short moment, file is uploaded and annotations editor is displayed.
+After a short moment, the file is uploaded and the annotations editor is displayed.
 Documents are uploaded to `./public/invoices/`.
 
-On the left half of the screen user can find `fields editor` and on opposite half `document view`.
+On the left half of the screen user can find `fields editor` and on the opposite half `document view`.
 
-At first, there are no annotations or fields on the right side. Those can be created by drag and drop with mouse on `document view`.
+At first, there are no annotations or fields on the right side. Those can be created by dragging and dropping with the mouse on `document view`.
 
-Once drag and drop is finished, new field is added in `fields editor`, where user can 
+Once drag and drop is finished, a new field is added in the `fields editor`, where the user can 
 - type a title of annotation
-- select a type - either free text or one of following required types
+- select a type - either free text or one of the following required types
     - supplier name
     - date of the purchase
     - total amount
     - currency
-- select currency, if type of annotation was chosen to be `currency`
+- select currency, if the type of annotation was chosen to be `currency`
 
-Finally, user can export created annotations by `Submit annotations` button.
-For that, all of required fields need to be annotated.
+Finally, the user can export created annotations by the `Submit annotations` button.
+For that, all of the required fields need to be annotated.
 
 Exported annotations file will be downloaded, but can be also found on `./public/annotations/`.
 
@@ -56,3 +56,5 @@ To see tests, run:
 ```bash
 npm run test
 ```
+
+That will start the development server of Next.js and Cypress E2E tests with the help of the `start-server-and-test` module.

@@ -1,6 +1,5 @@
-import { Annotation } from "@/components/AnnotationTool"
+import { Annotation } from "@/types/annotation"
 import { APIBaseResponse, APIErrorResponse } from "@/types/api"
-import { createReadStream } from "fs"
 import { writeFile } from "fs/promises"
 import { NextRequest, NextResponse } from "next/server"
 import path from "path"
@@ -31,7 +30,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         })
     } catch(error) {
         return NextResponse.json({
-            message: 'Something failed', status: 500
+            message: 'Something failed',
+            status: 500
         } as APIErrorResponse)
     }
 }
