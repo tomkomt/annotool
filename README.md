@@ -51,6 +51,7 @@ To deploy on docker, please use `Dockerfile`.
 
 This repo contains tests to verify, that API works and that user can create new annotations.
 
+### Tests in browser
 To see tests, run:
 
 ```bash
@@ -58,3 +59,11 @@ npm run test
 ```
 
 That will start the development server of Next.js and Cypress E2E tests with the help of the `start-server-and-test` module.
+
+### Tests for CI
+
+To run test during CI, add following comand to pipeline's stage/task:
+
+```bash
+npm run test:ci
+```
