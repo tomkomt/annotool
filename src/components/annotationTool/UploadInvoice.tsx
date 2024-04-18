@@ -56,8 +56,6 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
         }
     }
 
-    console.log(error)
-
     return(
         <>
             <form className="max-w-lg mx-auto">

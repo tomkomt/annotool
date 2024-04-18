@@ -71,18 +71,18 @@ describe('Annotool Tests', () => {
         cy.get('#cy-submit-annotations').should('exist').and('be.disabled')
 
         // Now satisfy condition
-        cy.get('#cy-field-name-0-0-1').should('exist').type('Supplier')
-        cy.get('#cy-field-type-0-0-1').should('exist').select('supplier_name')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist').type('Supplier')
+        cy.get('select[id^="cy-field-type-0-0-1"]').should('exist').select('supplier_name')
 
-        cy.get('#cy-field-name-110-110-1').should('exist').type('Date of purchase')
-        cy.get('#cy-field-type-110-110-1').should('exist').select('date_purchase')
+        cy.get('input[id^="cy-field-name-110-110-1"]').should('exist').type('Date of purchase')
+        cy.get('select[id^="cy-field-type-110-110-1"]').should('exist').select('date_purchase')
 
-        cy.get('#cy-field-name-210-210-1').should('exist').type('Total')
-        cy.get('#cy-field-type-210-210-1').should('exist').select('total_amount')
+        cy.get('input[id^="cy-field-name-210-210-1"]').should('exist').type('Total')
+        cy.get('select[id^="cy-field-type-210-210-1"]').should('exist').select('total_amount')
 
-        cy.get('#cy-field-name-310-310-1').should('exist').type('Supplier')
-        cy.get('#cy-field-type-310-310-1').should('exist').select('currency')
-        cy.get('#cy-field-currency-type-310-310-1').should('exist').select('dkk')
+        cy.get('input[id^="cy-field-name-310-310-1"]').should('exist').type('Supplier')
+        cy.get('select[id^="cy-field-type-310-310-1"]').should('exist').select('currency')
+        cy.get('select[id^="cy-field-currency-type-310-310-1"]').should('exist').select('dkk')
 
         // And submit button is enabled
         cy.get('#cy-submit-annotations').should('be.enabled')
@@ -105,7 +105,7 @@ describe('Annotool Tests', () => {
         cyImage.trigger('click', 30, 30)
         // ... and verify, that clicked bounding box and corresponding field are highlighted
         cy.get('#bounding-boxes-container div.highlighted').should('have.length', 1)
-        cy.get('div#cy-annotation-fields-0-0-1.highlighted').should('have.length', 1)
+        cy.get('div[id^="cy-annotation-fields-0-0-1"].highlighted').should('have.length', 1)
 
         // clear selected bounding boxes
         cyImage.trigger('click', 'bottom')
@@ -113,7 +113,7 @@ describe('Annotool Tests', () => {
         cy.get('div[id^="cy-annotation=fields-"].highlighted').should('have.length', 0)
 
         // now click on the 3rd row in fields editor
-        cy.get('div#cy-annotation-fields-210-210-1').click()
+        cy.get('div[id^="cy-annotation-fields-210-210-1"]').click()
         cy.get('#bounding-boxes-container div:nth-of-type(3)').should('have.class', 'highlighted')
     })
 
@@ -130,18 +130,18 @@ describe('Annotool Tests', () => {
         // fill all new fields
         cy.get('#cy-submit-annotations').should('exist').and('be.disabled')
 
-        cy.get('#cy-field-name-0-0-1').should('exist').type('Supplier')
-        cy.get('#cy-field-type-0-0-1').should('exist').select('supplier_name')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist').type('Supplier')
+        cy.get('select[id^="cy-field-type-0-0-1"]').should('exist').select('supplier_name')
 
-        cy.get('#cy-field-name-110-110-1').should('exist').type('Date of purchase')
-        cy.get('#cy-field-type-110-110-1').should('exist').select('date_purchase')
+        cy.get('input[id^="cy-field-name-110-110-1"]').should('exist').type('Date of purchase')
+        cy.get('select[id^="cy-field-type-110-110-1"]').should('exist').select('date_purchase')
 
-        cy.get('#cy-field-name-210-210-1').should('exist').type('Total')
-        cy.get('#cy-field-type-210-210-1').should('exist').select('total_amount')
+        cy.get('input[id^="cy-field-name-210-210-1"]').should('exist').type('Total')
+        cy.get('select[id^="cy-field-type-210-210-1"]').should('exist').select('total_amount')
 
-        cy.get('#cy-field-name-310-310-1').should('exist').type('Supplier')
-        cy.get('#cy-field-type-310-310-1').should('exist').select('currency')
-        cy.get('#cy-field-currency-type-310-310-1').should('exist').select('dkk')
+        cy.get('input[id^="cy-field-name-310-310-1"]').should('exist').type('Supplier')
+        cy.get('select[id^="cy-field-type-310-310-1"]').should('exist').select('currency')
+        cy.get('select[id^="cy-field-currency-type-310-310-1"]').should('exist').select('dkk')
 
         cy.get('#cy-submit-annotations').should('be.enabled').click()
 
@@ -176,7 +176,7 @@ describe('Annotool Tests', () => {
         cy.wait(1000)
 
         // now no field and no bounding boxes should exist
-        cy.get('#cy-field-name-0-0-1').should('not.exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('not.exist')
         cy.get('#bounding-boxes-container div').should('have.length', 0)
 
         // draw new bounding box
@@ -185,7 +185,7 @@ describe('Annotool Tests', () => {
         cyDocument.trigger('click', 100, 100)
 
         // check if new field and new bounding box exist
-        cy.get('#cy-field-name-0-0-1').should('exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist')
         cy.get('#bounding-boxes-container div').should('have.length', 1)
     })
 
@@ -212,21 +212,21 @@ describe('Annotool Tests', () => {
 
         cy.wait(1000)
 
-        cy.get('#cy-field-name-0-0-1').should('not.exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('not.exist')
         cy.get('#bounding-boxes-container div').should('have.length', 0)
 
         cyDocument.trigger('mousedown', 'topLeft')
         cyDocument.trigger('mouseup', 100, 100)
         cyDocument.trigger('click', 100, 100)
 
-        cy.get('#cy-field-name-0-0-1').should('exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist')
         cy.get('#bounding-boxes-container div').should('have.length', 1)
 
         // click on button to next page
         cy.get('#cy-next-page').click()
 
         // check that bounding box created on previous page is not visible
-        cy.get('#cy-field-name-0-0-1').should('exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist')
         cy.get('#bounding-boxes-container div:nth-of-type(1)').should('have.css', 'display', 'none')
 
         // create new bounding box on page 2
@@ -235,8 +235,8 @@ describe('Annotool Tests', () => {
         cyDocument.trigger('click', 200, 200)
 
         // both fields should exist, for both bounding boxes
-        cy.get('#cy-field-name-0-0-1').should('exist')
-        cy.get('#cy-field-name-150-150-2').should('exist')
+        cy.get('input[id^="cy-field-name-0-0-1"]').should('exist')
+        cy.get('input[id^="cy-field-name-150-150-2"]').should('exist')
         cy.get('#bounding-boxes-container div').should('have.length', 2)
         // but only that one from page 2 should be visible now
         cy.get('#bounding-boxes-container div:nth-of-type(1)').should('have.css', 'display', 'none')
