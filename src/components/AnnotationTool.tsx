@@ -3,37 +3,24 @@
 import { useState } from "react"
 import { UploadInvoice } from "./annotationTool/UploadInvoice"
 import { AnnotationsEditor } from "./annotationTool/AnnotationsEditor"
-import { InvoiceFileContext } from "@/context/InvoiceFileContext"
-
-export type BoundingBoxCoordinates = [number, number, number, number]
-
-export type Annotation = {
-    title: string,
-    type: string,
-    boundingBox: BoundingBoxCoordinates,
-    misc: {
-        currencyType?: string
-    },
-    page: number
-}
-
-export type AnnotationMap = Map<string, Annotation>
+import { InvoiceFileContext, InvoiceFileInfo } from "@/context/InvoiceFileContext"
 
 export const AnnotationTool = () => {
-    const [invoiceFile, setInvoiceFile] = useState<string|null>(null)
-    const [invoiceFileType, setInvoiceFileType] = useState<string|null>(null)
+    const [invoiceFile, setInvoiceFile] = useState<InvoiceFileInfo>({} as InvoiceFileInfo)
 
     return(
         <div>
             <InvoiceFileContext.Provider value={{
-                fileName: invoiceFile,
-                fileType: invoiceFileType
+                filename: invoiceFile?.filename,
+                mimetype: invoiceFile?.mimetype
             }}>
-                {!!!invoiceFile && <UploadInvoice handleInvoiceUpload={(fileName, fileType) => {
-                    setInvoiceFile(fileName)
-                    setInvoiceFileType(fileType)
+                {!!!invoiceFile.filename && <UploadInvoice onInvoiceUpload={(filename, mimetype) => {
+                    setInvoiceFile({
+                        filename,
+                        mimetype
+                    })
                 }} />}
-                {!!invoiceFile && <AnnotationsEditor />}
+                {!!invoiceFile.filename && <AnnotationsEditor />}
             </InvoiceFileContext.Provider>
         </div>
     )

@@ -1,8 +1,8 @@
 import { createContext } from "react"
 
-type InvoiceFile = {
-    fileName: string | null
-    fileType: string | null
+export type InvoiceFileInfo = {
+    filename: string
+    mimetype: string
 }
 
-export const InvoiceFileContext = createContext<InvoiceFile>({} as InvoiceFile)
+export const InvoiceFileContext = createContext<InvoiceFileInfo>({} as InvoiceFileInfo)

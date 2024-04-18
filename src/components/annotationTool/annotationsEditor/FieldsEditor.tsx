@@ -1,6 +1,5 @@
-import { ChangeEvent, useContext, useMemo } from "react"
-import { InvoiceFileContext } from "@/context/InvoiceFileContext"
-import { Annotation, AnnotationMap } from "@/components/AnnotationTool"
+import { ChangeEvent, useMemo } from "react"
+import { AnnotationMap, Annotation } from "@/types/annotation"
 
 interface FieldsEditorProps {
     annotations: AnnotationMap,
@@ -22,8 +21,9 @@ const currencies = ['eur', 'nok', 'sek', 'dkk']
 export const FieldsEditor = (props: FieldsEditorProps) => {
     const { annotations, selectedAnnotation, onAnnotationsChange, onRowClick, onEditorSubmit } = props
 
-    const invoiceFile = useContext(InvoiceFileContext)
-
+    /**
+     * Handle change of annotation's title
+     */
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>, annoKey: string) => {
         const updatedAnnotations = structuredClone(annotations)
         updatedAnnotations.set(annoKey, {
@@ -33,6 +33,9 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         onAnnotationsChange(updatedAnnotations)
     }
 
+    /**
+     * Handle change of annotation's type
+     */
     const onChangeType = (event: ChangeEvent<HTMLSelectElement>, annoKey: string) => {
         const updatedAnnotations = structuredClone(annotations)
         updatedAnnotations.set(annoKey, {
@@ -42,6 +45,9 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         onAnnotationsChange(updatedAnnotations)
     }
 
+    /**
+     * Handle change of annotation's currency type
+     */
     const onChangeCurrency = (event: ChangeEvent<HTMLSelectElement>, annoKey: string) => {
         const updatedAnnotations = structuredClone(annotations)
         updatedAnnotations.set(annoKey, {
@@ -53,12 +59,19 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
         onAnnotationsChange(updatedAnnotations)
     }
 
+    /**
+     * Handle click on delete icon
+     */
     const onDeleteAnnotationClick = (annoKey: string) => {
         const updatedAnnotations = structuredClone(annotations)
         updatedAnnotations.delete(annoKey)
         onAnnotationsChange(updatedAnnotations)
     }
 
+    /** 
+     * At first, submit button is disabled
+     * Some conditions needs to be fulfilled to enable it
+    */
     const isSubmitEnabled = useMemo(() => {
         const annotationsToInspect = Array.from(annotations.values())
         if(annotationsToInspect.every((anno) => anno.type !== RequiredFields.SupplierName)) return false
