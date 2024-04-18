@@ -24,28 +24,19 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
             formData.append('file', fileInput.files[0])
             
             try {
-                fetch('/api/upload', {
+                const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
-                .then((data: Partial<APIUploadResponse>) => {
-                    if(data.status === 200) {
-                        handleInvoiceUpload(data.uploadedFileName!, data.uploadedFileType!)
-                    } else {
-                        setError({
-                            message: data.message! ,
-                            code: data.status!
-                        })
-                    }
-                })
-                .catch((error: APIErrorResponse) => {
-                    console.error(error)
+                const data: Partial<APIUploadResponse> = await response.json()
+                if(data.status === 200) {
+                    handleInvoiceUpload(data.uploadedFileName!, data.uploadedFileType!)
+                } else {
                     setError({
-                        message: error.message,
-                        code: error.status
+                        message: data.message! ,
+                        code: data.status!
                     })
-                })    
+                }
             } catch(error: any) {
                 console.error(error)
                 setError({

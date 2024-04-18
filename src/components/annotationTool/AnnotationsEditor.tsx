@@ -44,31 +44,33 @@ export const AnnotationsEditor = () => {
      * If editor is submitted, send annotations to /api/annotations to generate json file.
      * Dimensions of bounding boxes are recalculated beforewards with ratio of image height and window height
      */
-    const handleEditorSubmit = () => {
+    const handleEditorSubmit = async () => {
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
         const recalculatedAnnotations = Array.from(annotations.values()).map((annotation) => ({
             ...annotation,
             boundingBox: annotation.boundingBox.map(bbValue => bbValue * imageResizeRatio)
         }))
 
         if(invoiceFile) {
-            fetch('/api/annotations', {
+            const response = await fetch('/api/annotations', {
                 method: 'POST',
                 body: JSON.stringify({
                     invoiceFileName: invoiceFile.filename,
                     annotations: recalculatedAnnotations
-                } as unknown as APIAnnotationsParams)
+                } as unknown as APIAnnotationsParams),
+                signal
             })
-            .then(response => {
-                const filename =  response.headers.get('Content-Disposition')?.split('filename=')[1] || 'file.json'
-                response.blob().then(blob => {
-                    let url = window.URL.createObjectURL(blob);
-                    let a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.click();
-                });
-            })
-            .catch((error: APIErrorResponse) => console.error(error))
+            const filename =  response.headers.get('Content-Disposition')?.split('filename=')[1] || 'file.json'
+            const blob = await response.blob()
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+
+            abortController.abort()
         }
     }
 
