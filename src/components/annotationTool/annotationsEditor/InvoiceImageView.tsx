@@ -60,10 +60,19 @@ export const InvoiceImageView = (props: InvoiceImageViewProps) => {
             />
             <div id="bounding-boxes-container">
                 {!!drawing && (
-                    <ProvisionalBoundingBox boundingBox={provisionalBoundingBox} widthOffset={widthOffset} />
+                    <ProvisionalBoundingBox 
+                        boundingBox={provisionalBoundingBox} 
+                        widthOffset={widthOffset} 
+                    />
                 )}
                 {Array.from(annotations, ([annoKey, annotation]) => (
-                    <BoundingBox annotation={annotation} annoKey={annoKey} widthOffset={widthOffset} page={1} isVisible={true} isSelected={selectedAnnotation === annoKey}/>
+                    <BoundingBox 
+                        key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-page-1-${annoKey}`}
+                        annotation={annotation} 
+                        widthOffset={widthOffset} 
+                        isVisible={true} 
+                        isSelected={selectedAnnotation === annoKey}
+                    />
                 ))}
             </div>
         </div>

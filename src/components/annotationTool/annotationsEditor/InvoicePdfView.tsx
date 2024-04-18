@@ -106,10 +106,19 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
             </div>
             <div id="bounding-boxes-container">
                 {!!drawing && (
-                    <ProvisionalBoundingBox boundingBox={provisionalBoundingBox} widthOffset={widthOffset} />
+                    <ProvisionalBoundingBox 
+                        boundingBox={provisionalBoundingBox} 
+                        widthOffset={widthOffset} 
+                    />
                 )}
                 {Array.from(annotations, ([annoKey, annotation]) => (
-                    <BoundingBox annotation={annotation} annoKey={annoKey} widthOffset={widthOffset} page={1} isVisible={actualPage === annotation.page} isSelected={selectedAnnotation === annoKey}/>
+                    <BoundingBox 
+                        key={`bounding-box-${annotation.boundingBox[0]}-${annotation.boundingBox[1]}-page-${actualPage}-${annoKey}`}
+                        annotation={annotation} 
+                        widthOffset={widthOffset} 
+                        isVisible={actualPage === annotation.page} 
+                        isSelected={selectedAnnotation === annoKey}
+                    />
                 ))}
             </div>
         </div>
