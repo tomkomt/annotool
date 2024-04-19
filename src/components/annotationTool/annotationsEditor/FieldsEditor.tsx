@@ -4,6 +4,8 @@ import { AnnotationMap, Annotation } from "@/types/annotation"
 interface FieldsEditorProps {
     annotations: AnnotationMap,
     selectedAnnotation: string|null,
+    isLoading: boolean
+    isSubmitting: boolean
     onAnnotationsChange: (annotations: AnnotationMap) => void
     onRowClick: (annoKey: string) => void
     onEditorSubmit: () => void
@@ -19,7 +21,7 @@ enum RequiredFields {
 const currencies = ['eur', 'nok', 'sek', 'dkk']
 
 export const FieldsEditor = (props: FieldsEditorProps) => {
-    const { annotations, selectedAnnotation, onAnnotationsChange, onRowClick, onEditorSubmit } = props
+    const { annotations, selectedAnnotation, isLoading, isSubmitting, onAnnotationsChange, onRowClick, onEditorSubmit } = props
 
     /**
      * Handle change of annotation's title
@@ -92,7 +94,7 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
                     height: 'calc(100vh - 50px)',
                     overflowY: 'auto'
                 }}>
-                    {!annotations.size && (<div>To start annotating, draw the first bounding box on the invoice image.</div>)}
+                    {(!annotations.size && !isLoading) && (<div>To start annotating, draw the first bounding box on the invoice image.</div>)}
                     {Array.from(annotations, ([annoKey, annotation]) => (
                         <div 
                             onClick={() => onRowClick(annoKey)} 
@@ -168,7 +170,9 @@ export const FieldsEditor = (props: FieldsEditorProps) => {
                         onClick={onEditorSubmit}
                         className={isSubmitEnabled ? 
                             "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" : 
-                            "text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed font-medium rounded-lg text-sm px-5 py-2.5 text-center"} disabled={!isSubmitEnabled}>Export JSON</button>
+                            "text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed font-medium rounded-lg text-sm px-5 py-2.5 text-center"} 
+                        disabled={!isSubmitEnabled || isSubmitting}
+                        >{isSubmitting ? 'Exporting...' : 'Export JSON'}</button>
                 </div>
             </form>
         </div>

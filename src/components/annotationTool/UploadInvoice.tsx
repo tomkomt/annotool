@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react"
-import { APIErrorResponse } from "@/types/api"
 import { APIUploadResponse } from "@/app/api/upload/route"
 import { ErrorMessage } from "./common/ErrorMessage"
+import { Spinner } from "./common/Spinner"
 
 interface UploadInvoiceProps {
     onInvoiceUpload: (originalFilename: string, filename: string, mimetype: string) => void
@@ -12,11 +12,15 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
 
     const [error, setError] = useState<{ message: string, code: number} | null>(null)
 
+    const [uploading, setUploading] = useState<boolean>(false)
+
     /**
      * Handle change of selected file to upload.
      * Use /api/upload route to upload it to public folder and get filename and mimetype for other components.
      */
     const handleInvoiceFileChange = async(e: ChangeEvent<HTMLInputElement>) => {
+        setUploading(true)
+
         const fileInput = e.target
 
         if(fileInput.files?.length) {
@@ -43,6 +47,8 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
                     message: error.message,
                     code: error.status
                 })
+            } finally {
+                setUploading(false)
             }
         }
     }
@@ -62,6 +68,7 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
                 <div className="max-w-lg mx-auto text-sm text-gray-500 dark:text-gray-300" id="upload_invoice_help">Upload image of your scanned invoice as JPG, JPEG or PNG file.</div>
             </form>
             {!!error?.message && <ErrorMessage title={error.message} message={error.code === 415 ? 'Please, upload only PDF documents or JPEG/JPG/PNG images.' : '' } />}
+            {!!uploading && <Spinner />}
         </>
     )
 }

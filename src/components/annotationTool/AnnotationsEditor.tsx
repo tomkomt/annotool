@@ -4,9 +4,9 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { InvoiceFileContext } from "@/context/InvoiceFileContext"
 import { APIAnnotationsParams } from "@/app/api/annotations/route"
-import { APIErrorResponse } from "@/types/api"
 import { InvoicePdfView } from "./annotationsEditor/InvoicePdfView"
 import { AnnotationMap, BoundingBoxCoordinates } from "@/types/annotation"
+import { Spinner } from "./common/Spinner"
 
 export const AnnotationsEditor = () => {
     const invoiceFile = useContext(InvoiceFileContext)
@@ -18,8 +18,20 @@ export const AnnotationsEditor = () => {
     const [selectedAnnotation, setSelectedAnnotation] = useState<string|null>(null)
     const [imageDimensions, setImageDimensions] = useState<[number, number]>([0, 0])
 
+    const [loading, setLoading] = useState<boolean>(false)
+    const [submitting, setSubmitted] = useState<boolean>(false)
+
     const editorHeight = window.innerHeight
     const imageResizeRatio = useMemo(() => imageDimensions[1] > 0 && editorHeight > 0 ? imageDimensions[1] / editorHeight : 1, [editorHeight, imageDimensions])
+
+    /** 
+     * Start spinner if loading content is image
+     * PDF reader has it's own loading indicator
+    */
+    useEffect(() => {
+        if(invoiceFile.mimetype !== 'application/pdf')
+            setLoading(true)
+    }, [invoiceFile])
 
     /**
      * To get better precision of bounding box placement,
@@ -45,6 +57,8 @@ export const AnnotationsEditor = () => {
      * Dimensions of bounding boxes are recalculated beforewards with ratio of image height and window height
      */
     const handleEditorSubmit = async () => {
+        setSubmitted(true)
+
         const abortController = new AbortController();
         const signal = abortController.signal;
 
@@ -72,6 +86,7 @@ export const AnnotationsEditor = () => {
             a.click();
 
             abortController.abort()
+            setSubmitted(false)
         }
     }
 
@@ -93,37 +108,45 @@ export const AnnotationsEditor = () => {
     }
 
     return(
-        <div className="columns-2" ref={editorRef}>
-            <div>
-                <FieldsEditor 
-                    annotations={annotations}
-                    selectedAnnotation={selectedAnnotation}
-                    onAnnotationsChange={setAnnotations}
-                    onRowClick={setSelectedAnnotation}
-                    onEditorSubmit={handleEditorSubmit}
-                />
-            </div>
-            <div>
-                {!!invoiceFile && invoiceFile.mimetype === 'application/pdf' && (
-                    <InvoicePdfView 
-                        widthOffset={offsetWidth}
-                        annotations={annotations} 
+        <>
+           {!!loading && <Spinner />}
+            <div className="columns-2" ref={editorRef}>
+                <div>
+                    <FieldsEditor 
+                        annotations={annotations}
                         selectedAnnotation={selectedAnnotation}
-                        onBoundingBoxCreate={handleBoundingBoxCreate}
-                        onBoundingBoxClick={setSelectedAnnotation}
+                        onAnnotationsChange={setAnnotations}
+                        onRowClick={setSelectedAnnotation}
+                        onEditorSubmit={handleEditorSubmit}
+                        isLoading={loading}
+                        isSubmitting={submitting}
                     />
-                )}
-                {!!invoiceFile && invoiceFile.mimetype !== 'application/pdf' && (
-                    <InvoiceImageView 
-                        widthOffset={offsetWidth}
-                        annotations={annotations} 
-                        selectedAnnotation={selectedAnnotation}
-                        onBoundingBoxCreate={handleBoundingBoxCreate}
-                        onBoundingBoxClick={setSelectedAnnotation}
-                        onImageDimensionsLoad={setImageDimensions}
-                    />
-                )}
+                </div>
+                <div>
+                    {!!invoiceFile && invoiceFile.mimetype === 'application/pdf' && (
+                        <InvoicePdfView 
+                            widthOffset={offsetWidth}
+                            annotations={annotations} 
+                            selectedAnnotation={selectedAnnotation}
+                            onBoundingBoxCreate={handleBoundingBoxCreate}
+                            onBoundingBoxClick={setSelectedAnnotation}
+                        />
+                    )}
+                    {!!invoiceFile && invoiceFile.mimetype !== 'application/pdf' && (
+                        <InvoiceImageView 
+                            widthOffset={offsetWidth}
+                            annotations={annotations} 
+                            selectedAnnotation={selectedAnnotation}
+                            onBoundingBoxCreate={handleBoundingBoxCreate}
+                            onBoundingBoxClick={setSelectedAnnotation}
+                            onImageDimensionsLoad={(payload) => {
+                                setLoading(false)
+                                setImageDimensions(payload)}
+                            }
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     )
 }
