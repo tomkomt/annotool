@@ -47,6 +47,37 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 To deploy on docker, please use `Dockerfile`.
 
+Please note, that Next.js app running on cloud, or in general running with `next start` is in `production` mode.
+Such app can't access `/public` folder, where `development` mode stores uploaded invoice files and annotations json files.
+
+For `production` mode, Firebase is used.
+
+### Configure Firebase with Storage
+
+For that, the user needs to have or create account on Firebase and binded Storage to that account.
+
+All needed credentials are read from `./lib/db/firebaseConfig.ts` and that file is populated by values from `.env` file.
+
+An example ENV file is `.env.template`.
+
+That storage needs to have rule allowing to read and write, so update Rules as following:
+```
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+And the last step is to enable CORS on Google Cloud for PDF files. For that, there is a documentation or guides available online.
+
+For local development, `.env.local` can be used.
+For production, `.env.production` or `.env`.
+
+For the sake of this project and it's purpose, values used for development are in Dockerfile.
+
 ## Tests
 
 This repo contains tests to verify, that API works and that user can create new annotations.

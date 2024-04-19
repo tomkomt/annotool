@@ -43,7 +43,7 @@ export const POST = async (req: NextRequest, res: NextApiResponse) => {
     
     // If in production, use Firebase
     // otherwise use local filesystem
-    if(process.env.NODE_ENV === 'development') {
+    if(process.env.NODE_ENV === 'production') {
         const app = initializeApp(firebaseConfig)
         const auth = getAuth(app);
         const storage = getStorage(app)

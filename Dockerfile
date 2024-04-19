@@ -6,6 +6,14 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# Filling ENV variables.
+# NOTE: This should be done elsewhere with Kubernetes or whatever, but for the sake of this assignment it is good enough.
+ARG FIREBASE_API_KEY=AIzaSyBz6LBBaldKhF0UevOA2FQhzCFTbQJPSJY
+ARG FIREBASE_PROJECT_ID=annotool-fe895
+ARG FIREBASE_SENDER_ID=15724565630
+ARG FIREBASE_APP_ID=1:15724565630:web:2aaa83d195d2d6b37af42f
+ARG FIREBASE_MEASUREMENT_ID=G-5B6XTRTVRV
+
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \

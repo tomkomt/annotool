@@ -22,7 +22,7 @@ export interface APIAnnotationsResponse extends APIBaseResponse {
 export const POST = async (req: NextRequest, res: NextResponse) => {
     const body: APIAnnotationsParams = await req.json()
 
-    if(process.env.NODE_ENV === 'development') {
+    if(process.env.NODE_ENV === 'production') {
         const app = initializeApp(firebaseConfig)
         const auth = getAuth(app);
         const storage = getStorage(app)
