@@ -76,7 +76,14 @@ And the last step is to enable CORS on Google Cloud for PDF files. For that, the
 For local development, `.env.local` can be used.
 For production, `.env.production` or `.env`.
 
-For the sake of this project and it's purpose, values used for development are in Dockerfile.
+For the sake of this project and it's purpose, use credentials used during development:
+```
+FIREBASE_API_KEY=AIzaSyBz6LBBaldKhF0UevOA2FQhzCFTbQJPSJY
+FIREBASE_PROJECT_ID=annotool-fe895
+FIREBASE_SENDER_ID=15724565630
+FIREBASE_APP_ID=1:15724565630:web:2aaa83d195d2d6b37af42f
+FIREBASE_MEASUREMENT_ID=G-5B6XTRTVRV
+```
 
 ## Tests
 
