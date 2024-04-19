@@ -11,11 +11,13 @@ export const AnnotationTool = () => {
     return(
         <div>
             <InvoiceFileContext.Provider value={{
+                originalFilename: invoiceFile?.originalFilename,
                 filename: invoiceFile?.filename,
                 mimetype: invoiceFile?.mimetype
             }}>
-                {!!!invoiceFile.filename && <UploadInvoice onInvoiceUpload={(filename, mimetype) => {
+                {!!!invoiceFile.filename && <UploadInvoice onInvoiceUpload={(originalFilename, filename, mimetype) => {
                     setInvoiceFile({
+                        originalFilename,
                         filename,
                         mimetype
                     })

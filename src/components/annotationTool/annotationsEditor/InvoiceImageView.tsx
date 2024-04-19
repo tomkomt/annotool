@@ -41,7 +41,7 @@ export const InvoiceImageView = (props: InvoiceImageViewProps) => {
         <div>
             <Image
                 id="cy-Image-component"
-                src={`/invoices/${invoiceFile.filename}`}
+                src={invoiceFile.filename}
                 draggable={false}
                 alt={invoiceFile.filename || 'Invoice file was not found'}
                 sizes='100vh'

@@ -1,23 +1,31 @@
-import { APIBaseResponse, APIErrorResponse } from "@/types/api"
+import { firebaseConfig } from "@/lib/db/firebaseConfig"
+import { APIErrorResponse } from "@/types/api"
+import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { writeFile } from "fs/promises"
+import { NextApiResponse } from "next"
 import { NextRequest, NextResponse } from "next/server"
 import path from "path"
+import { v4 as uuidv4 } from 'uuid'
 
 const allowedMimetypes = ['application/pdf', 'image/jpeg', 'image/png']
 
 export interface APIUploadResponse extends APIErrorResponse {
+    originalFileName: string
     uploadedFileName: string
     uploadedFileType: string
 }
 
-export const POST = async (req: NextRequest) => {
+export const POST = async (req: NextRequest, res: NextApiResponse) => {
+    // Do some preparation work, like
+    // getting files from form data; creating buffer; and getting filename and mimetyp
     const formData = await req.formData()
-
     const invoiceFile = formData.get('file') as File
 
     if(!invoiceFile) {
         return NextResponse.json({
-            error: 'No invoice file attached',
+            error: 'No invoice file attached.',
             status: 400
         })
     }
@@ -32,22 +40,60 @@ export const POST = async (req: NextRequest) => {
             status: 415
         } as APIErrorResponse)
     }
+    
+    // If in production, use Firebase
+    // otherwise use local filesystem
+    if(process.env.NODE_ENV === 'development') {
+        const app = initializeApp(firebaseConfig)
+        const auth = getAuth(app);
+        const storage = getStorage(app)
 
-    try {
-        const pathToFile = path.join(process.cwd(), "public/invoices/" + filename)
-        await writeFile(
-            pathToFile, buffer
-        )    
+        try {
+            const fileId = uuidv4()
+            const storageRef = ref(storage, `uploads/${fileId}/${filename}`)
+            const { metadata } = await uploadBytes(storageRef, buffer)
+            const { fullPath } = metadata
+            if (!fullPath) {
+                return NextResponse.json({
+                    message: 'There was some error while uploading the file.',
+                    status: 403
+                })
+            }
+            const fileURL = `https://storage.googleapis.com/${storageRef.bucket}/${storageRef.fullPath}`
 
-        return NextResponse.json({
-            uploadedFileName: filename, 
-            uploadedFileType: filetype,
-            status: 200
-        } as APIUploadResponse)
-    } catch(error) {
-        return NextResponse.json({
-            message: 'Something failed',
-            status: 500
-        } as APIErrorResponse)
+            const fileRef = ref(storage, fileURL)
+            const filePublicURL = await getDownloadURL(fileRef)
+            return NextResponse.json({ 
+                originalFileName: filename,
+                uploadedFileName: filePublicURL,
+                uploadedFileType: filetype ,
+                status: 200
+            } as APIUploadResponse)
+        } catch(error) {
+            return NextResponse.json({
+                message: `Something failed: ${JSON.stringify(error)}`,
+                status: 500
+            } as APIErrorResponse)   
+        }
+    } else {    
+        try {
+            const pathToFile = path.join(process.cwd(), "public/invoices/" + filename)
+            await writeFile(
+                pathToFile, buffer
+            )    
+    
+            return NextResponse.json({
+                originalFileName: filename,
+                uploadedFileName: `/invoices/${filename}`, 
+                uploadedFileType: filetype,
+                status: 200
+            } as APIUploadResponse)
+        } catch(error) {
+            return NextResponse.json({
+                message: `Something failed: ${JSON.stringify(error)}`,
+                status: 500
+            } as APIErrorResponse)
+        }
+    
     }
 }

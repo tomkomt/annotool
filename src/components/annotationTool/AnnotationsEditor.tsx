@@ -57,7 +57,8 @@ export const AnnotationsEditor = () => {
             const response = await fetch('/api/annotations', {
                 method: 'POST',
                 body: JSON.stringify({
-                    invoiceFileName: invoiceFile.filename,
+                    originalFilename: invoiceFile.originalFilename,
+                    invoiceFilename: invoiceFile.filename,
                     annotations: recalculatedAnnotations
                 } as unknown as APIAnnotationsParams),
                 signal

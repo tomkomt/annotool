@@ -4,7 +4,7 @@ import { APIUploadResponse } from "@/app/api/upload/route"
 import { ErrorMessage } from "./common/ErrorMessage"
 
 interface UploadInvoiceProps {
-    onInvoiceUpload: (filename: string, mimetype: string) => void
+    onInvoiceUpload: (originalFilename: string, filename: string, mimetype: string) => void
 }
 
 export const UploadInvoice = (props: UploadInvoiceProps) => {
@@ -30,7 +30,7 @@ export const UploadInvoice = (props: UploadInvoiceProps) => {
                 })
                 const data: Partial<APIUploadResponse> = await response.json()
                 if(data.status === 200) {
-                    handleInvoiceUpload(data.uploadedFileName!, data.uploadedFileType!)
+                    handleInvoiceUpload(data.originalFileName!, data.uploadedFileName!, data.uploadedFileType!)
                 } else {
                     setError({
                         message: data.message! ,

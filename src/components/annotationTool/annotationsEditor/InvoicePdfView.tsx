@@ -90,7 +90,7 @@ export const InvoicePdfView = (props: InvoicePdfViewProps) => {
         <div>
             <div id="cy-Document-component">
                 <Document 
-                    file={`/invoices/${invoiceFile.filename}`}
+                    file={invoiceFile.filename}
                     onLoadSuccess={onDocumentLoadSuccess}
                     inputRef={canvasRef}
                 >

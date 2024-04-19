@@ -11,6 +11,7 @@
     "test:ci": "start-server-and-test 'next dev' http://localhost:3000 'cypress run --headed --browser chrome --e2e"
   },
   "dependencies": {
+    "firebase": "^10.11.0",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.8.0",
     "next": "14.2.0",

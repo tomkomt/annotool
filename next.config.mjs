@@ -4,7 +4,10 @@ const nextConfig = {
     //     config.resolve.alias.canvas = false
     //     return config
     // }
-    output: 'standalone'
+    output: 'standalone',
+    images: {
+        domains: ['firebasestorage.googleapis.com']
+    }
 };
 
 export default nextConfig;
