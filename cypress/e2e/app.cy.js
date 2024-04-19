@@ -141,15 +141,18 @@ describe('Annotool Tests', () => {
     })
 
     it('should upload a PDF file and draw a new bounding box', () => {
-        cy.intercept('POST', '/api/upload').as('uploadFileRequest')
+        cy.intercept('POST', '/api/upload', {
+            originalFileName: 'example_1.pdf',
+            uploadedFileName: '/invoices/example_1.pdf',
+            uploadedFileType: 'application/pdf',
+            status: 200
+        })
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
         // upload pdf file
         cy.get('#upload_invoice').attachFile('example_1.pdf')
-
-        cy.wait('@uploadFileRequest')
 
         cy.get('#bounding-boxes-container').should('exist')
     
@@ -180,14 +183,17 @@ describe('Annotool Tests', () => {
     })
 
     it('should upload a multi-page PDF file and draw bounding box on each page', () => {
-        cy.intercept('POST', '/api/upload').as('uploadFileRequest')
+        cy.intercept('POST', '/api/upload', {
+            originalFileName: 'example_1.pdf',
+            uploadedFileName: '/invoices/example_1.pdf',
+            uploadedFileType: 'application/pdf',
+            status: 200
+        })
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
         cy.get('#upload_invoice').attachFile('example_1.pdf')
-
-        cy.wait('@uploadFileRequest')
 
         cy.get('#bounding-boxes-container').should('exist')
     
