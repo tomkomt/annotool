@@ -1,11 +1,11 @@
-import fixtureJson from '../fixtures/example_3_.jpeg.json'
+import fixtureJson from '../fixtures/cytest_3_.jpeg.json'
 
 /**
  * All tests uploads example JPEG file
  * This will trigger upload and checks if page changed
  */
 const openAnnotationsEditor = () => {
-    cy.get('#upload_invoice').attachFile('example_3.jpeg')
+    cy.get('#upload_invoice').attachFile('cytest_3.jpeg')
     cy.get('#bounding-boxes-container').should('exist')
 }
 
@@ -142,17 +142,17 @@ describe('Annotool Tests', () => {
 
     it('should upload a PDF file and draw a new bounding box', () => {
         cy.intercept('POST', '/api/upload', {
-            originalFileName: 'example_1.pdf',
-            uploadedFileName: '/invoices/example_1.pdf',
+            originalFileName: 'cytest_1.pdf',
+            uploadedFileName: '/invoices/cytest_1.pdf',
             uploadedFileType: 'application/pdf',
             status: 200
         })
-        cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
+        cy.intercept('GET', '/invoices/cytest_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
         // upload pdf file
-        cy.get('#upload_invoice').attachFile('example_1.pdf')
+        cy.get('#upload_invoice').attachFile('cytest_1.pdf')
 
         cy.get('#bounding-boxes-container').should('exist')
     
@@ -184,16 +184,16 @@ describe('Annotool Tests', () => {
 
     it('should upload a multi-page PDF file and draw bounding box on each page', () => {
         cy.intercept('POST', '/api/upload', {
-            originalFileName: 'example_1.pdf',
-            uploadedFileName: '/invoices/example_1.pdf',
+            originalFileName: 'cytest_1.pdf',
+            uploadedFileName: '/invoices/cytest_1.pdf',
             uploadedFileType: 'application/pdf',
             status: 200
         })
-        cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
+        cy.intercept('GET', '/invoices/cytest_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
-        cy.get('#upload_invoice').attachFile('example_1.pdf')
+        cy.get('#upload_invoice').attachFile('cytest_1.pdf')
 
         cy.get('#bounding-boxes-container').should('exist')
     
@@ -247,7 +247,7 @@ describe('Annotool Tests', () => {
     it('should display error message component if file is not supported', () => {
         cy.visit('/')
 
-        cy.get('#upload_invoice').attachFile('example_3_.jpeg.json')
+        cy.get('#upload_invoice').attachFile('cytest_3_.jpeg.json')
 
         cy.get('#cy-error-message').should('exist')
     })

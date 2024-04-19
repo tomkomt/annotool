@@ -5,9 +5,9 @@
 /public/invoices/*.jpeg
 /public/invoices/*.png
 /public/invoices/*.pdf
-!/public/invoices/example_1.pdf
-!/public/invoices/example_2.png
-!/public/invoices/example_3.jpeg
+!/public/invoices/cytest_1.pdf
+!/public/invoices/cytest_2.png
+!/public/invoices/cytest_3.jpeg
 
 # dependencies
 /node_modules
