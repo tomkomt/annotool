@@ -27,14 +27,6 @@ const drawBoundingBoxes = () => {
 }
 
 describe('Annotool Tests', () => {
-    beforeEach(() => {
-        cy.intercept('POST', '/api/upload', {
-            uploadedFileName: 'example_3.jpeg',
-            uploadedFileType: 'image/jpeg',
-            status: 200
-        })
-    })
-
     it('should open page with file upload component', () => {
         cy.visit('/')
 
@@ -149,18 +141,16 @@ describe('Annotool Tests', () => {
     })
 
     it('should upload a PDF file and draw a new bounding box', () => {
-        cy.intercept('POST', '/api/upload', {
-            uploadedFileName: 'example_1.pdf',
-            uploadedFileType: 'application/pdf',
-            status: 200
-        })
-
+        cy.intercept('POST', '/api/upload').as('uploadFileRequest')
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
         // upload pdf file
         cy.get('#upload_invoice').attachFile('example_1.pdf')
+
+        cy.wait('@uploadFileRequest')
+
         cy.get('#bounding-boxes-container').should('exist')
     
         const cyDocument = cy.get('#cy-Document-component div.react-pdf__Document')
@@ -190,17 +180,15 @@ describe('Annotool Tests', () => {
     })
 
     it('should upload a multi-page PDF file and draw bounding box on each page', () => {
-        cy.intercept('POST', '/api/upload', {
-            uploadedFileName: 'example_1.pdf',
-            uploadedFileType: 'application/pdf',
-            status: 200
-        })
-
+        cy.intercept('POST', '/api/upload').as('uploadFileRequest')
         cy.intercept('GET', '/invoices/example_1.pdf').as('loadDocument')
 
         cy.visit('/')
 
         cy.get('#upload_invoice').attachFile('example_1.pdf')
+
+        cy.wait('@uploadFileRequest')
+
         cy.get('#bounding-boxes-container').should('exist')
     
         const cyDocument = cy.get('#cy-Document-component div.react-pdf__Document')
@@ -252,13 +240,6 @@ describe('Annotool Tests', () => {
 
     it('should display error message component if file is not supported', () => {
         cy.visit('/')
-
-        cy.intercept('POST', '/api/upload', {
-            uploadedFileName: 'example_3_.jpeg.json',
-            uploadedFileType: 'application/json',
-            message: 'File with mimetype "application/json" is not supported.',
-            status: 415
-        })
 
         cy.get('#upload_invoice').attachFile('example_3_.jpeg.json')
 
